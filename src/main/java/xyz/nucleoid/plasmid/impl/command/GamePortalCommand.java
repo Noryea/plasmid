@@ -43,6 +43,7 @@ public final class GamePortalCommand {
                         .then(argument("pos", BlockPosArgumentType.blockPos()).executes(GamePortalCommand::disconnectBlock))
                     )
                     .then(literal("open")
+                        .requires(Permissions.require("plasmid.command.game.portal.open", 3))
                         .then(GamePortalArgument.argument("portal").executes(GamePortalCommand::openPortal))
                     )
                 )

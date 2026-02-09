@@ -4,11 +4,11 @@ plugins {
   id "com.modrinth.minotaur" version "2.+"
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
-
-archivesBaseName = project.archives_base_name
 group = project.maven_group
+
+base {
+  archivesName = project.archives_base_name
+}
 
 sourceSets {
   testmod {
@@ -166,11 +166,13 @@ tasks.withType(JavaCompile).configureEach {
 
 java {
   withSourcesJar()
+  sourceCompatibility = JavaVersion.VERSION_21
+  targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {
   from("LICENSE") {
-    rename { "${it}_${project.archivesBaseName}"}
+    rename { "${it}_${project.archives_base_name}"}
   }
 }
 
