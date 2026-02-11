@@ -96,7 +96,6 @@ public final class GameCommand {
                     )
                 )
                 .then(literal("join")
-                    .requires(Permissions.require("plasmid.command.game.join", 2))
                     .executes(ctx -> GameCommand.joinGame(ctx, JoinIntent.PLAY))
                     .then(GameSpaceArgument.argument("game_space")
                         .executes(ctx -> GameCommand.joinQualifiedGame(ctx, JoinIntent.PLAY))
