@@ -74,6 +74,9 @@ repositories {
     name = "Ladysnake Libs"
     url = 'https://maven.ladysnake.org/releases'
   }
+  flatDir {
+    dirs 'custom_stimuli'
+  }
 }
 
 loom {
@@ -98,9 +101,7 @@ dependencies {
   modApi include("xyz.nucleoid:more-codecs:${project.more_codecs_version}") {
     exclude(group: "net.fabricmc.fabric-api")
   }
-  modApi include("xyz.nucleoid:stimuli:${project.stimuli_version}") {
-    exclude(group: "net.fabricmc.fabric-api")
-  }
+  modApi include(":stimuli:0.5.4+1.21.11")
   modApi include("xyz.nucleoid:map-templates:${project.map_templates_version}") {
     exclude(group: "net.fabricmc.fabric-api")
   }

@@ -15,6 +15,7 @@ import xyz.nucleoid.plasmid.api.game.GameTexts;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.UUID;
 
 public final class ManagedGameSpacePlayers implements GameSpacePlayers {
@@ -75,30 +76,28 @@ public final class ManagedGameSpacePlayers implements GameSpacePlayers {
     private GameResult accept(Collection<ServerPlayerEntity> players, JoinIntent intent) {
         var acceptor = new LocalJoinAcceptor(players, intent);
 
-        switch (this.space.acceptPlayers(acceptor)) {
-            case LocalJoinAcceptor.Teleport teleport -> {
-                try {
-                    var joiningSet = new MutablePlayerSet(this.space.getServer());
-                    for (var player : players) {
-                        this.teleporter.teleportIn(player, teleport::applyTeleport);
-                        this.set.add(player);
-                        this.byIntent(intent).add(player);
-                        this.space.onAddPlayer(player);
-                        joiningSet.add(player);
-                    }
-                    teleport.runCallbacks(joiningSet, intent);
-
-                    return GameResult.ok();
-                } catch (Throwable throwable) {
-                    this.space.getLifecycle().onError(this.space, throwable, "handling LocalJoinAcceptor.Teleport");
-                    return GameResult.error(GameTexts.Join.unexpectedError());
+        if (Objects.requireNonNull(this.space.acceptPlayers(acceptor)) instanceof LocalJoinAcceptor.Teleport teleport) {
+            try {
+                var joiningSet = new MutablePlayerSet(this.space.getServer());
+                for (var player : players) {
+                    this.teleporter.teleportIn(player, teleport::applyTeleport);
+                    this.set.add(player);
+                    this.byIntent(intent).add(player);
+                    this.space.onAddPlayer(player);
+                    joiningSet.add(player);
                 }
+                teleport.runCallbacks(joiningSet, intent);
+
+                return GameResult.ok();
+            } catch (Throwable throwable) {
+                this.space.getLifecycle().onError(this.space, throwable, "handling LocalJoinAcceptor.Teleport");
+                return GameResult.error(GameTexts.Join.unexpectedError());
             }
-            default -> throw new IllegalStateException("Accept event must be handled");
         }
+        throw new IllegalStateException("Accept event must be handled");
     }
 
-    protected void attemptGarbageCollection() {
+    private void attemptGarbageCollection() {
         if (this.set.isEmpty()) {
             this.space.close(GameCloseReason.GARBAGE_COLLECTED);
         }
